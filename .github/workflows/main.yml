@@ -7,7 +7,7 @@ jobs:
       matrix:
         docker_tag: [bionic-x86_64, focal-x86_64, stretch-x86_64, buster-x86_64, bullseye-x86_64]
         os: [ubuntu-latest]
-    name: Build x86-64 deb
+    name: Build ${{ matrix.docker_tag }} deb
     steps:
       - name: Checkout ripgrep
         uses: actions/checkout@v2
@@ -15,9 +15,9 @@ jobs:
           repository: 'BurntSushi/ripgrep'
           ref: 'master'
       - name: Build ripgrep
-        run: docker run --rm ghcr.io/rust-cli-apt/dockers:${{ matrix.docker_tag }} x86_64-unknown-linux-gnu
+        run: cd ripgrep && docker run --rm ghcr.io/rust-cli-apt/dockers:${{ matrix.docker_tag }} x86_64-unknown-linux-gnu
       - name: Archive deb
         uses: actions/upload-artifact@v2
         with:
           name: code-coverage-report
-          path: target/debian/*.deb
+          path: ripgrep/target/debian/*.deb
