@@ -2,20 +2,22 @@ on: [push]
 
 jobs:
   build_deb:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         docker_tag: [bionic-x86_64, focal-x86_64, stretch-x86_64, buster-x86_64, bullseye-x86_64]
-        os: [ubuntu-latest]
     name: Build ${{ matrix.docker_tag }} deb
     steps:
+      - name: Checkout scripts etc
+        uses: actions/checkout@v2
       - name: Checkout ripgrep
         uses: actions/checkout@v2
         with:
           repository: 'BurntSushi/ripgrep'
           ref: 'master'
+          path: ripgrep
       - name: Build ripgrep
-        run: docker run --rm -v $(pwd):/src ghcr.io/rust-cli-apt/dockers:${{ matrix.docker_tag }} x86_64-unknown-linux-gnu
+        run: docker run --rm -v ./ripgrep:/src -v ./scripts:/scripts ghcr.io/rust-cli-apt/dockers:${{ matrix.docker_tag }} x86_64-unknown-linux-gnu
       - name: Archive deb
         uses: actions/upload-artifact@v2
         with:
